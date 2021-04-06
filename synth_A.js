@@ -2,29 +2,30 @@
 let breite = 1200;
 let hoehe = 600;
 let osc;
-let button;
-let sliderFreq;
-let sliderAmp;
-let buttonSaw;
-let buttonTri;
-let buttonSine;
-let buttonPlay;
+var sliderFreq;
+var sliderAmp;
+var buttonSaw;
+var buttonTri;
+var buttonSine;
+var buttonPlay;
 let playing;
 let filter, filterFreq, filterRes;
-let sliderFilterCutOff;
-let sliderFilterRes;
+var sliderFilterCutOff;
+var sliderFilterRes;
 let freq;
 
-waveoffset = 300;
+var waveoffset = 300;
 
 function setup() {
+
   createCanvas(breite, hoehe);
+
   osc = new p5.Oscillator(); // set frequency and type
   osc.amp(0.2);
   fft = new p5.FFT();
   filter = new p5.LowPass();
-  sliderFreq = createSlider(20,2000,440);
   sliderAmp = createSlider(0.01,2,0.2,0.01);
+  sliderFreq = createSlider(20,2000,440);
   sliderFilterCutOff = createSlider(20,10000,1000);
   sliderFilterRes= createSlider(0,100,0);
 
@@ -40,6 +41,7 @@ function setup() {
 
   osc.disconnect();
   osc.connect(filter);
+
 }
 
 function toggleOnOff(){
@@ -85,7 +87,7 @@ function draw() {
 
   drawWaveform(waveform);
   drawSpectrum(spectrum);
-
+  drawText();
 }
 
 
@@ -114,6 +116,15 @@ function drawSpectrum(spectrum){
   }
  endShape();
 
+}
+
+function drawText(){
+    let sliderlength = 140;
+    textFont('monospace');
+    text('Osc\nVolume', 5 , hoehe-25,);
+    text('Osc\nFrequency', sliderlength*1, hoehe-25);
+    text('Filter\nCutOff', sliderlength*2, hoehe-25);
+    text('Filter\nResonance', sliderlength*3, hoehe-25);
 
 
 }
