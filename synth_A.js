@@ -38,9 +38,9 @@ function setup() {
 
   buttonTri = createButton('Triangle');
   buttonSaw = createButton('Sawtooth');
+  buttonSquare = createButton('Square');
   buttonSine = createButton('Sine');
   buttonPlay = createButton('Play/Pause');
-  buttonSquare = createButton('Square');
   buttonTri.mousePressed(setTri);
   buttonSaw.mousePressed(setSaw);
   buttonSine.mousePressed(setSine);
