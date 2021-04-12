@@ -8,19 +8,25 @@ var buttonSaw;
 var buttonTri;
 var buttonSine;
 var buttonPlay;
+var buttonSquare;
+
 let playing;
 let filter, filterFreq, filterRes;
 var sliderFilterCutOff;
 var sliderFilterRes;
 let freq;
+let trigger;
 
 var waveoffset = 300;
+
+offsetBorder = 30;
+
 
 function setup() {
 
   createCanvas(breite, hoehe);
 
-  osc = new p5.Oscillator(); // set frequency and type
+  osc = new p5.Oscillator();
   osc.amp(0.2);
   fft = new p5.FFT();
   filter = new p5.LowPass();
@@ -32,12 +38,14 @@ function setup() {
 
   buttonTri = createButton('Triangle');
   buttonSaw = createButton('Sawtooth');
-  buttonSine = createButton('Sine')
-  buttonPlay = createButton('Play/Pause')
+  buttonSine = createButton('Sine');
+  buttonPlay = createButton('Play/Pause');
+  buttonSquare = createButton('Square');
   buttonTri.mousePressed(setTri);
   buttonSaw.mousePressed(setSaw);
   buttonSine.mousePressed(setSine);
   buttonPlay.mousePressed(toggleOnOff)
+  buttonSquare.mousePressed(setSquare);
 
   osc.disconnect();
   osc.connect(filter);
@@ -67,13 +75,17 @@ osc.setType('sawtooth')
 }
 
 function setSine(){
-  osc.setType('sine')
+osc.setType('sine')
+}
+
+function setSquare(){
+osc.setType('square')
 }
 
 
 function draw() {
 
-  background(255);
+  background(45+random(1,5), 140+random(1,5), 131+random(1,5));
 
   let waveform = fft.waveform(); // analyze the waveform
   let spectrum = fft.analyze();
@@ -93,24 +105,42 @@ function draw() {
 
 function drawWaveform (waveform){
   beginShape();
-  strokeWeight(1);
-  for (let i = 0; i < waveform.length; i++) {
-    let x = map(i, 0, waveform.length, 0, width);
-  //  let x = map(i, 0, 1/freq, 0, width);
+  strokeWeight(3);
+  noFill();
+  stroke(109+random(1,4),255+random(1,4),245+random(1,4));
+  trigger = 0;
+  for (var i = 0; i < waveform.length; i++){
 
-    let y = map(waveform[i], -1, 1, height/2, 0)+waveoffset;
+    // find the first point in the waveform buffer
+    // where the waveform crosses zero, going in a positive direction
+    if ((waveform[i] > 0) && (waveform[i-1] <= 0) && (trigger == 0))
+    {
+      trigger = 1;
+      firstPos = i;
+    }
+    //once that first positive-going zero crossing is found,
+    //start drawing the waveform
+    if (trigger == 1)
+    {
+    	// subtract the offset of the first zero crossing from "i",
+      // and use only use an early section of the buffer
+      // (in this case, the first third of it, because it will
+      // end in different places based on where the zero crossing
+      // happened)
+      var x = map((i - firstPos), 0, waveform.length, 0+offsetBorder, width-offsetBorder);
+    	var y = map(waveform[i], -1, 1, height/2, 0)+waveoffset;
+    }
     vertex(x, y);
   }
- endShape();
-
+  endShape();
 }
 
 
 function drawSpectrum(spectrum){
   beginShape();
-  strokeWeight(1);
+  strokeWeight(2);
   for (let i = 0; i < spectrum.length; i++) {
-    let x = map(i, 0, spectrum.length, 0, width);
+    let x = map(i, 0, spectrum.length, 0+offsetBorder, width-offsetBorder);
     let y = map(spectrum[i], 0, 255, height/2, 0);
     vertex(x, y);
   }
